@@ -107,7 +107,7 @@ document.getElementById('searchInput').addEventListener('keypress', e =>{
   if(e.key === 'Enter') document.getElementById('searchBtn').click();
 });
 
-// ▼▼▼ [地圖修正] 404 -> 使用標準的 Google Maps Embed URL 並修正變數錯誤 ▼▼▼
+// [地圖修正] (不變)
 function searchGoogleMaps() {
   const input = document.getElementById('mapSearchInput');
   if (!input) return;
@@ -115,15 +115,12 @@ function searchGoogleMaps() {
   if (!query) return;
   const mapFrame = document.getElementById('mapFrame');
   if (!mapFrame) return;
-  // 修正網址為 https, 
-  // 修正網域為 maps.google.com,
-  // 修正變數 ${query} (原本少了 $ 符號)
   const newSrc = `https://maps.google.com/maps?q=${encodeURIComponent(query)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
   mapFrame.src = newSrc;
 }
-// ▲▲▲ 修改結束 ▲▲▲
 
-// 新聞 (不變)
+
+// [新聞修正] (不變，繼續使用 corsproxy.io)
 const RSS_FEEDS = {
     tw: [
         'https://news.ltn.com.tw/rss/all.xml',       // 自由時報 (首選)
@@ -181,8 +178,6 @@ function parseRSS(xmlText) {
     }
     return articles;
 }
-
-// ▼▼▼ [新聞修正] 替換失效的 allorigins 代理 ▼▼▼
 async function loadNews(){
   const list = document.getElementById('newsList');
   if (!list) return;
@@ -193,15 +188,10 @@ async function loadNews(){
   let success = false;
   for (const rssUrl of urlsToTry) {
       try {
-          // [修改] 更換為 corsproxy.io 代理
           const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(rssUrl)}`;
-          
           const res = await fetch(proxyUrl);
           if (!res.ok) throw new Error(`代理伺服器錯誤 (狀態: ${res.status})`);
-          
-          // corsproxy.io 直接回傳 XML/TEXT，不是 JSON
           const xmlText = await res.text(); 
-          
           const articles = parseRSS(xmlText);
           
           if (articles && articles.length > 0) {
@@ -238,7 +228,6 @@ async function loadNews(){
   }
   if (refreshBtn) refreshBtn.disabled = false;
 }
-// ▲▲▲ 修改結束 ▲▲▲
 
 
 // 股票區 (不變)
@@ -254,7 +243,7 @@ function switchStockMarket(market){
   loadStocks();
 }
 
-// ▼▼▼ [股票修正] 替換失效的 allorigins 代理 ▼▼▼
+// ▼▼▼ [股票修正] 台股和美股現在都呼叫我們自己的後端 Function ▼▼▼
 async function loadStocks(){
   const container = document.getElementById('stocksList');
   if (!container) return;
@@ -266,14 +255,14 @@ async function loadStocks(){
     container.innerHTML = '';
     for(const symbol of watchlist){
       try{
-        // [修改] 更換為 corsproxy.io 代理
-        const twseUrl = `https_mis.twse.com.tw/stock/api/getStockInfo.jsp?ex_ch=tse_${symbol}.tw&json=1&delay=0`;
-        const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(twseUrl)}`;
+        // [修改] 不再使用 corsproxy.io，
+        // 呼叫我們自己的後端 Function，並傳入 market=tw
+        const url = `/functions/get-stock?market=tw&symbol=${symbol}`;
         
-        const res = await fetch(proxyUrl);
-        // corsproxy.io 直接回傳 JSON
+        const res = await fetch(url);
         const data = await res.json(); 
         
+        // [不變] 這裡的解析邏輯與之前完全相同
         if(data.msgArray && data.msgArray.length > 0) {
           const st = data.msgArray[0];
           const price = parseFloat(st.z) || 0;
@@ -301,15 +290,17 @@ async function loadStocks(){
       }
     }
   } else {
-    // (美股 API [不變] - 仍使用我們的後端 Function)
+    // (美股 API [修改] - 明確加入 market=us 參數)
     container.innerHTML = '';
     for(const symbol of watchlist){
       try{
-        const url = `/functions/get-stock?symbol=${symbol}`;
+        // [修改] 傳入 market=us 參數
+        const url = `/functions/get-stock?market=us&symbol=${symbol}`;
         
         const response = await fetch(url);
         const data = await response.json();
         
+        // [不變] 這裡的解析邏輯與之前完全相同
         if(data['Global Quote']){
           const q = data['Global Quote'];
           const price = parseFloat(q["05. price"]) || 0;

@@ -115,7 +115,7 @@ function searchGoogleMaps() {
   if (!query) return;
   const mapFrame = document.getElementById('mapFrame');
   if (!mapFrame) return;
-  const newSrc = `https://maps.google.com/maps?q=${encodeURIComponent(query)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+  const newSrc = `http://googleusercontent.com/maps/google.com/2{encodeURIComponent(query)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
   mapFrame.src = newSrc;
 }
 
@@ -243,7 +243,7 @@ function switchStockMarket(market){
   loadStocks();
 }
 
-// ▼▼▼ [股票修正] 修正 Cloudflare Function 的網址 (移除 /functions) ▼▼▼
+// [股票修正] (不變，使用 /get-stock)
 async function loadStocks(){
   const container = document.getElementById('stocksList');
   if (!container) return;
@@ -255,11 +255,10 @@ async function loadStocks(){
     container.innerHTML = '';
     for(const symbol of watchlist){
       try{
-        // [修改] 修正網址路徑
         const url = `/get-stock?market=tw&symbol=${symbol}`;
         
         const res = await fetch(url);
-        const data = await res.json(); // <--- 錯誤發生在這裡 (script.js:288)
+        const data = await res.json();
         
         if(data.msgArray && data.msgArray.length > 0) {
           const st = data.msgArray[0];
@@ -292,11 +291,10 @@ async function loadStocks(){
     container.innerHTML = '';
     for(const symbol of watchlist){
       try{
-        // [修改] 修正網址路徑
         const url = `/get-stock?market=us&symbol=${symbol}`;
         
         const response = await fetch(url);
-        const data = await response.json(); // <--- 錯誤也可能發生在這裡
+        const data = await response.json();
         
         if(data['Global Quote'] && Object.keys(data['Global Quote']).length > 0){
           const q = data['Global Quote'];
@@ -322,13 +320,15 @@ async function loadStocks(){
         console.error(`載入 ${symbol} 失敗:`, e);
         container.insertAdjacentHTML('beforeend', `<div class="stock-item">載入 ${symbol} 失敗</div>`);
       }
-      // [修正] Alpha Vantage 的 API 有速率限制，即使是 demo key。保留延遲。
-      // 但我們現在是用自己的私人 key (存在變數裡)，可以嘗試縮短延遲
-      await delay(1000); // (原為 1400)
+      
+      // ▼▼▼ [API 限制修正] 遵守 Alpha Vantage 每分鐘 5 次的限制 ▼▼▼
+      // 將延遲從 1000ms (1秒) 增加到 12500ms (12.5秒)
+      await delay(12500); 
+      // ▲▲▲ 修改結束 ▲▲▲
     }
   }
 }
-// ▲▲▲ 修改結束 ▲▲▲
+
 
 
 function delay(ms){return new Promise(r=>setTimeout(r,ms));}

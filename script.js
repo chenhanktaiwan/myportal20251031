@@ -594,20 +594,20 @@ function initTabNavigation() {
         tab.addEventListener('click', () => {
             const pageName = tab.dataset.page; // e.g., "home"
             
-            // 1. 更新按鈕狀態
+            // 1. 更新按鈕狀態 (這部分本來就是對的)
             tabs.forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
             
-            // 2. 切換頁面內容
+            // 2. 切換頁面內容 (!!! 這裡是修正的地方 !!!)
             pages.forEach(page => {
                 if (page.id === 'page-' + pageName) {
-                    page.style.display = 'block';
+                    page.classList.add('active'); // (修正) 使用 class 來控制顯示
                 } else {
-                    page.style.display = 'none';
+                    page.classList.remove('active'); // (修正) 移除 class 來隱藏
                 }
             });
             
-            // 3. [修改] 根據不同分頁，執行不同的載入功能
+            // 3. [修改] 根據不同分頁，執行不同的載入功能 (這部分本來就是對的)
             if (pageName === 'home') {
                  // 檢查首頁功能是否需要重新載入
                  const weatherRow = document.getElementById('weatherRow');

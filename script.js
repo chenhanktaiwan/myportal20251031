@@ -1,5 +1,7 @@
-// [保留] 你的股票 API 金鑰 (Alpha Vantage)
-const ALPHA_VANTAGE_API_KEY = 'K09FCGY2Y90L99V0';
+// ▼▼▼ [修改] API Key 已被移除 ▼▼▼
+// const ALPHA_VANTAGE_API_KEY = 'demo'; 
+// (我們不再需要這行，它已移至 Cloudflare 後端)
+// ▲▲▲ 修改結束 ▲▲▲
 
 // 日期 (不變)
 function updateDatetime() {
@@ -20,7 +22,7 @@ function updateDatetime() {
   }
 }
 
-// ▼▼▼ [修正] 亂碼 ?? -> 天氣 Emojis ▼▼▼
+// [修正] 亂碼 ?? -> 天氣 Emojis
 const weatherCodes = {
   0: {emoji:'☀️', desc:'晴天'},
   1: {emoji:'🌤️', desc:'晴朗'},
@@ -38,7 +40,6 @@ const weatherCodes = {
   95: {emoji:'🌩️', desc:'雷雨'},
   99: {emoji:'⛈️', desc:'強雷雨'}
 };
-// ▲▲▲ 修改結束 ▲▲▲
 
 function updateWeather(sourceSelectorId){
   const selectorNav = document.getElementById('locationSelectorNav');
@@ -75,9 +76,8 @@ function updateWeather(sourceSelectorId){
       const tMin = Math.round(d.daily.temperature_2m_min[i]);
       const rainProb = d.daily.precipitation_probability_max[i] || 0;
       
-      // ▼▼▼ [修正] 亂碼 ?? -> 💧 ▼▼▼
+      // [修正] 亂碼 ?? -> 💧
       html+=`<div class="weather-day-h"><div class="weather-date-h">${dayName}</div><span class="weather-emoji-h">${w.emoji}</span><div class="weather-temp-h">${tMin}° - ${tMax}°</div><div class="weather-rain-h">💧 ${rainProb}%</div><div class="weather-desc-h">${w.desc}</div></div>`;
-      // ▲▲▲ 修改結束 ▲▲▲
     }
     targetRow.innerHTML = html;
     
@@ -117,7 +117,7 @@ function searchGoogleMaps() {
   if (!query) return;
   const mapFrame = document.getElementById('mapFrame');
   if (!mapFrame) return;
-  const newSrc = `http://googleusercontent.com/maps/google.com/2{encodeURIComponent(query)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+  const newSrc = `https://maps.google.com/maps?q=${encodeURIComponent(query)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
   mapFrame.src = newSrc;
 }
 
@@ -183,7 +183,7 @@ async function loadNews(){
   const list = document.getElementById('newsList');
   if (!list) return;
   list.innerHTML = '<li class="news-loading">載入新聞中</li>';
-  const refreshBtn = document.getElementById('refreshNewsBtn');
+  const refreshBtn = document.getElementById('refreshBtn');
   if (refreshBtn) refreshBtn.disabled = true;
   const urlsToTry = RSS_FEEDS[currentNewsTab] || RSS_FEEDS['tw'];
   let success = false;
@@ -247,6 +247,8 @@ function switchStockMarket(market){
   document.getElementById('stockTab_' + market).classList.add('active');
   loadStocks();
 }
+
+// ▼▼▼ [修改] loadStocks 函式以使用 Cloudflare Function ▼▼▼
 async function loadStocks(){
   const container = document.getElementById('stocksList');
   if (!container) return;
@@ -258,13 +260,13 @@ async function loadStocks(){
     container.innerHTML = '';
     for(const symbol of watchlist){
       try{
-        // [修改] 更換為 allorigins 代理
+        // (台股 API 不變，因為它不使用金鑰)
         const twseUrl = `https://mis.twse.com.tw/stock/api/getStockInfo.jsp?ex_ch=tse_${symbol}.tw&json=1&delay=0`;
         const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(twseUrl)}`;
         
         const res = await fetch(proxyUrl);
-        const jsonData = await res.json(); // allorigins 回傳 JSON
-        const data = JSON.parse(jsonData.contents); // 取得內部的 JSON
+        const jsonData = await res.json(); 
+        const data = JSON.parse(jsonData.contents); 
         
         if(data.msgArray && data.msgArray.length > 0) {
           const st = data.msgArray[0];
@@ -293,13 +295,18 @@ async function loadStocks(){
       }
     }
   } else {
-    // (Alpha Vantage (美股) 不需要代理，保持原樣)
+    // (美股 API [修改] - 使用我們的後端 Function)
     container.innerHTML = '';
     for(const symbol of watchlist){
       try{
-        const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${ALPHA_VANTAGE_API_KEY}`;
+        // 舊: const url = `https://www.alphavantage.co/query?function=...&apikey=...`;
+        // 新: 呼叫我們在 Cloudflare 上的代理
+        const url = `/functions/get-stock?symbol=${symbol}`;
+        
         const response = await fetch(url);
         const data = await response.json();
+        
+        // (其餘的解析邏輯完全不變)
         if(data['Global Quote']){
           const q = data['Global Quote'];
           const price = parseFloat(q["05. price"]) || 0;
@@ -323,10 +330,14 @@ async function loadStocks(){
       }catch(e){
         container.insertAdjacentHTML('beforeend', `<div class="stock-item">載入 ${symbol} 失敗</div>`);
       }
-      await delay(1400);
+      // (我們仍然保留延遲，因為 demo key 限制的是後端對 API 的呼叫)
+      await delay(1400); 
     }
   }
 }
+// ▲▲▲ 修改結束 ▲▲▲
+
+
 function delay(ms){return new Promise(r=>setTimeout(r,ms));}
 document.getElementById('stockAddBtn').onclick = () => {
   const input=document.getElementById('stockInput');
@@ -433,7 +444,7 @@ function saveNotes() {
   const notesArea = document.getElementById('quickNotesArea');
   if (notesArea) {
     localStorage.setItem('portalQuickNotes', notesArea.value);
-    // (可以加入一個 "已儲存" 的小提示)
+    // (可以加入一個 "已儲存" の小提示)
   }
 }
 
@@ -476,13 +487,13 @@ function startPausePomo() {
         if (pomoMode === 'work') {
           pomoMode = 'break';
           pomoTimeLeft = 5 * 60; // 5 分鐘休息
-          // ▼▼▼ [修正] 亂碼 ?? -> ☕ ▼▼▼
+          // [修正] 亂碼 ?? -> ☕
           if (pomoStatusDisplay) pomoStatusDisplay.textContent = '休息時間 ☕';
           alert('工作時間結束！休息 5 分鐘。');
         } else {
           pomoMode = 'work';
           pomoTimeLeft = 25 * 60; // 25 分鐘工作
-          // ▼▼▼ [修正] 亂碼 ?? -> 🧑‍💻 ▼▼▼
+          // [修正] 亂碼 ?? -> 🧑‍💻
           if (pomoStatusDisplay) pomoStatusDisplay.textContent = '準備開始工作 🧑‍💻';
           alert('休息結束！準備開始工作。');
         }
@@ -501,7 +512,7 @@ function resetPomo() {
   pomoTimeLeft = 25 * 60;
   updatePomoDisplay();
   if (pomoStartPauseBtn) pomoStartPauseBtn.textContent = '開始';
-  // ▼▼▼ [修正] 亂碼 ?? -> 🧑‍💻 ▼▼▼
+  // [修正] 亂碼 ?? -> 🧑‍💻
   if (pomoStatusDisplay) pomoStatusDisplay.textContent = '準備開始工作 🧑‍💻';
 }
 // --- 新功能 JS 結束 ---
@@ -546,7 +557,7 @@ function initTabNavigation() {
                  }
             
             } else if (pageName === 'work') {
-                // 載入 "工作" 分頁的資料
+                // D"工作" 分頁的資料
                 // (確保番茄鐘顯示是正確的)
                 updatePomoDisplay(); 
                 loadTodos();

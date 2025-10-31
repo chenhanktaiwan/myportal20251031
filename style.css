@@ -1,0 +1,688 @@
+/* [修改] 緊湊版 CSS (保留) */
+* {margin:0;padding:0;box-sizing:border-box;}
+body {
+  font-family:'Microsoft JhengHei','PingFang TC',sans-serif;
+  background:linear-gradient(135deg,#dde9e7 0,#c9dbd9 100%);
+  color:#526c67;
+  min-height:100vh;
+  padding:20px;
+  padding-top: 70px;
+}
+.container {max-width:1400px;margin:0 auto;}
+
+/* [已還原] 你的天氣區塊 CSS (使用緊湊版) */
+.header {
+  background:linear-gradient(135deg,#7ba8a3 0,#9dbfbb 100%);
+  /* [修改] 調整 padding 以容納新版面 */
+  padding: 20px 32px;
+  border-radius:24px;
+  color:white;
+  margin-bottom: 24px;
+  box-shadow:0 8px 30px rgba(123,168,163,0.25);
+}
+.header-top {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  /* [修改] 移除 margin-bottom 因為 7 天預報已移入 */
+  margin-bottom: 0;
+  gap:20px;
+}
+.greeting-section {
+  font-weight:700;
+  font-size: 24px;
+  /* [修改] 確保歡迎詞不會被過度壓縮 */
+  flex-shrink: 0;
+  min-width: 250px;
+}
+.datetime {margin-top:6px; font-weight:500; font-size:14px; opacity:0.9;}
+.location-selector {
+  background:rgba(255 255 255 / 26%);
+  border:2px solid rgba(255 255 255 / 38%);
+  border-radius:10px;
+  font-size:13px;
+  color:white;
+  padding: 5px 10px;
+  cursor:pointer;
+  backdrop-filter:blur(12px);
+  transition:background 0.3s,border 0.3s;
+  /* [修改] 確保選擇器不會被壓縮 */
+  flex-shrink: 0;
+}
+.location-selector:hover, .location-selector:focus {
+  background:rgba(255 255 255 / 34%);
+  border-color:rgba(255 255 255 / 60%);
+  outline:none;
+}
+
+/* [修改] 7 天預報的新樣式 */
+.weather-forecast-horizontal {
+  display:grid;
+  gap: 8px; /* (原 12px) */
+  grid-template-columns:repeat(7,1fr);
+  /* [修改] 讓它填滿中間空間 */
+  flex: 1;
+  margin: 0 20px;
+}
+.weather-day-h {
+  background:rgba(255 255 255 / 23%);
+  border-radius:12px; /* (原 14px) */
+  padding: 10px 5px; /* (原 12px 10px 10px) */
+  border:2px solid rgba(255 255 255 / 12%);
+  text-align:center;
+  min-width: 0; /* 允許 grid 縮小 */
+}
+.weather-date-h {
+  font-size:12px; /* (原 13px) */
+  font-weight:700;
+  margin-bottom:4px; /* (原 6px) */
+}
+.weather-emoji-h {
+  font-size:28px; /* (原 36px) */
+  margin-bottom:2px; /* (原 4px) */
+  display:block;
+  user-select:none;
+}
+.weather-temp-h {
+  font-size:14px; /* (原 16px) */
+  font-weight:700;
+}
+.weather-rain-h {
+  font-size:11px; /* (原 12px) */
+  margin-top:2px; /* (原 4px) */
+  color:#def1f0aa;
+  opacity: 0.9;
+}
+/* [修改] 隱藏文字描述以節省空間 */
+.weather-desc-h {
+  display: none;
+}
+.weather-loading {
+  grid-column:span 7;
+  text-align:center;
+  padding:22px 0;
+  color:white;
+  font-weight:700;
+}
+
+/* 搜尋列 (緊湊版) */
+.search-section {
+  display:flex;
+  gap:10px;
+  margin-bottom: 20px;
+}
+.search-input {
+  flex:1;
+  font-size: 14px;
+  border-radius:12px;
+  padding: 10px 16px;
+  border:2px solid #a3bbb9;
+  transition:all 0.3s ease;
+  font-weight:400;
+}
+.search-input:focus {
+  outline:none;
+  border-color:#7ba8a3;
+  box-shadow:0 0 0 4px rgba(123 168 163 / 0.2);
+}
+.search-btn {
+  background-color:#7ba8a3;
+  border-radius:12px;
+  border:none;
+  color:white;
+  font-size: 14px;
+  font-weight:700;
+  cursor:pointer;
+  padding: 10px 20px;
+  transition:background-color 0.35s ease;
+}
+.search-btn:hover {background-color:#618577;}
+
+/* 卡片區 (緊湊版) (不變) */
+.info-section {
+  display:flex;
+  gap: 20px;
+  flex-wrap:wrap;
+}
+.news-card {
+  flex:1;
+  min-width:400px;
+  max-width:720px;
+  background:white;
+  border-radius:20px;
+  box-shadow:0 8px 32px #a6b7b68e;
+  padding: 16px 20px;
+}
+.section-header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:10px;
+  flex-wrap:wrap;
+  gap:10px;
+}
+.section-title {
+  display:flex;
+  gap:8px;
+  font-weight:700;
+  font-size: 18px;
+  color:#578f89;
+  align-items:center;
+}
+.section-icon {
+  background:linear-gradient(135deg,#7ba8a3,#9dbfbb);
+  border-radius:8px;
+  color:white;
+  width: 28px;
+  height: 28px;
+  display:grid;
+  place-items:center;
+  font-weight:900;
+  font-size: 15px;
+}
+.news-tabs {
+  display:flex;
+  gap: 8px;
+}
+.news-tab {
+  border-radius:10px;
+  background:#f3fbfb;
+  color:#578f89;
+  font-weight:600;
+  font-size: 13px;
+  padding: 5px 14px;
+  border:2px solid #cee2df;
+  cursor:pointer;
+  transition:background-color 0.3s ease,border-color 0.3s ease;
+  user-select:none;
+}
+.news-tab.active,.news-tab:hover {
+  background:#7ba8a3;
+  border-color:#7ba8a3;
+  color:white;
+}
+.refresh-btn {
+  font-weight:600;
+  background:#7ba8a3;
+  color:white;
+  border:none;
+  border-radius:10px;
+  padding: 5px 14px;
+  cursor:pointer;
+  font-size: 13px;
+  transition:background-color 0.3s ease;
+}
+.refresh-btn:disabled {opacity:0.5; cursor:not-allowed;}
+.news-list {
+  list-style:none;
+  max-height: 400px;
+  overflow-y:auto;
+  padding:0;
+}
+.news-item {
+  border-left:4px solid #86b4a9;
+  margin-bottom: 6px;
+  background:#f1f7f5;
+  border-radius:10px;
+  padding: 10px 14px;
+  font-weight:600;
+  color:#3a6259;
+  cursor:pointer;
+  transition:background 0.3s ease;
+}
+.news-item:hover {
+  background:#9ac2b9;
+  color:white;
+}
+.news-item-title {
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+.news-item-meta {
+  margin-top:4px;
+  font-weight:400;
+  font-size:12px;
+  color:#58716b;
+  display:flex;
+  justify-content:space-between;
+}
+.news-loading {text-align:center;padding:20px;color:#7a9794;font-weight:600;}
+
+/* 股票卡 (緊湊版) (不變) */
+.stock-card {
+  flex-basis:360px;
+  background:white;
+  border-radius:20px;
+  padding: 16px 20px;
+  box-shadow:0 8px 30px #a2b8b39e;
+  display:flex;
+  flex-direction:column;
+  gap: 12px;
+}
+.stock-tabs {
+  display:flex;
+  gap:10px;
+  margin-top: 2px;
+}
+.stock-tab {
+  padding: 6px 20px;
+  border-radius:10px;
+  border:2px solid #a6cdc5;
+  background:#ccede9;
+  font-size: 15px;
+  font-weight:700;
+  color:#3e7e72;
+  cursor:pointer;
+  transition:all 0.28s ease;
+  user-select:none;
+}
+.stock-tab.active, .stock-tab:hover {
+  border-color:#7ba8a3;
+  background:#7ba8a3;
+  color:white;
+}
+.stock-search {
+  display:flex;
+  gap: 8px;
+}
+.stock-search-input {
+  padding: 10px 14px;
+  border-radius:12px;
+  font-size: 14px;
+  font-weight:600;
+  border:2px solid #a1d1c4;
+  background:#dbece8;
+  color:#376655;
+  flex:1;
+  transition:border-color 0.3s ease;
+}
+.stock-search-input:focus {
+  outline:none;
+  border-color:#7ba8a3;
+}
+.stock-add-btn {
+  background:#7ba8a3;
+  border-radius:12px;
+  padding: 10px 20px;
+  cursor:pointer;
+  font-size: 14px;
+  font-weight:700;
+  color:white;
+  border:none;
+  transition:background-color 0.3s ease;
+}
+.stock-add-btn:hover {
+  background:#628775;
+}
+.stock-list {
+  max-height:400px;
+  overflow-y:auto;
+  display:flex;
+  flex-direction:column;
+  gap: 8px;
+}
+.stock-item {
+  background:#cee3db;
+  border-radius:12px;
+  padding: 10px 14px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  cursor:pointer;
+  transition:background-color 0.3s ease;
+  font-weight:700;
+  color:#3c786c;
+}
+.stock-item:hover {
+  background:#7ba8a3;
+  color:white;
+}
+.stock-info {
+  display:flex;
+  flex-direction:column;
+  gap: 3px;
+  text-align:left;
+  min-width: 6rem;
+}
+.stock-symbol {
+  font-size: 1.1rem;
+}
+.stock-name {
+  font-weight:400;
+  font-size: 0.8rem;
+  color:#4a655c;
+}
+.stock-price-info {
+  text-align:right;
+  min-width:7rem;
+}
+.stock-price {
+  font-size: 1.2rem;
+}
+.stock-change {
+  font-size: 0.85rem;
+}
+.stock-up {
+  color:#e2646a;
+}
+.stock-down {
+  color:#2e7052;
+}
+.stock-neutral {
+  color:#50766e;
+}
+
+/* 你的 CSS 樣式 (已修改為 "緊湊" 版本) (不變) */
+.main-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+.card {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 8px 30px #a2b8b36e;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.card-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 16px;
+  color: #578f89;
+  border-bottom: 2px solid #e0ebea;
+  padding-bottom: 8px;
+}
+.card-icon {
+  font-size: 15px;
+}
+.project-item {
+  background: #f1f7f5;
+  border-radius: 12px;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background 0.3s, box-shadow 0.3s;
+}
+.project-item:hover {
+  background: #e6f0ee;
+  box-shadow: 0 4px 12px #b8cac7;
+}
+.project-name { font-weight: 700; color: #3a6259; margin-bottom: 4px; font-size: 15px; }
+.project-desc { font-size: 13px; color: #58716b; }
+.tool-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #f1f7f5;
+  padding: 10px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+.tool-item:hover { background: #e6f0ee; }
+.tool-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: #cce3db;
+  color: #3e7e72;
+  font-weight: 700;
+}
+.tool-info { flex: 1; }
+.tool-name { font-weight: 700; color: #3a6259; font-size: 15px; }
+.tool-url { font-size: 13px; color: #58716b; }
+.link-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.quick-link {
+  background: #f1f7f5;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-weight: 600;
+  color: #3a6259;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+.quick-link:hover { background: #e6f0ee; }
+.bookmark-section { display: flex; flex-direction: column; gap: 8px; }
+.bookmark-category {
+  font-weight: 700;
+  color: #3e7e72;
+  margin-top: 6px;
+}
+.bookmark-link {
+  padding-left: 10px;
+  border-left: 3px solid #cce3db;
+  font-weight: 600;
+  color: #3a6259;
+  cursor: pointer;
+}
+.bookmark-link:hover { color: #7ba8a3; }
+
+/* 地圖 CSS (緊湊版) (不變) */
+.map-card-full {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 8px 32px #a6b7b68e;
+  padding: 16px 20px;
+  margin-top: 20px;
+}
+.map-card-full .section-header {
+  gap: 16px;
+}
+.map-search-box {
+  display: flex;
+  flex: 1;
+  gap: 10px;
+  min-width: 250px;
+  max-width: 600px;
+}
+.map-content {
+  margin-top: 12px;
+}
+.map-content iframe {
+  border-radius: 12px;
+  border: 2px solid #cee2df;
+  width: 100%;
+  height: 350px;
+}
+
+/* --- [新功能] 置頂導覽列 和 分頁 CSS (緊湊版) --- (不變) */
+.portal-nav-sticky {
+  position: sticky;
+  top: 20px; /* 配合 body 的 padding */
+  z-index: 1000;
+  background:linear-gradient(135deg,#7ba8a3 0,#9dbfbb 100%);
+  padding: 12px 24px; /* [修改] */
+  border-radius: 20px; /* [修改] */
+  box-shadow: 0 8px 30px rgba(123, 168, 163, 0.35);
+  max-width: 1400px;
+  margin: -50px auto 0 auto;
+  top: 20px;
+  /* [已還原] 導覽列左右對齊 */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.portal-tabs {
+  display: flex;
+  gap: 10px; /* [修改] */
+  justify-content: flex-start; /* [修改] 靠左 */
+}
+.portal-tab-btn {
+  font-family: 'Microsoft JhengHei', 'PingFang TC', sans-serif;
+  border-radius: 10px; /* [修改] */
+  background: rgba(255, 255, 255, 0.23);
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  color: white;
+  font-weight: 700;
+  font-size: 15px; /* [修改] */
+  padding: 6px 16px; /* [修改] */
+  cursor: pointer;
+  transition: background 0.3s ease, border-color 0.3s ease;
+  user-select: none;
+}
+.portal-tab-btn.active, .portal-tab-btn:hover {
+  background: white;
+  border-color: white;
+  color: #7ba8a3; /* 點選後變為主題綠色 */
+}
+/* [已還原] 導覽列右側資訊 */
+.nav-info-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  color: white;
+}
+.nav-datetime {
+  font-size: 13px;
+  font-weight: 500;
+  opacity: 0.9;
+}
+.nav-weather {
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.nav-weather-emoji {
+  font-size: 20px;
+}
+/* [修改] 首頁 location-selector (在導覽列中) */
+.nav-info-right .location-selector {
+  padding: 4px 8px; /* [修改] 更緊湊 */
+  font-size: 13px;
+}
+/* 分頁內容 */
+.page-content {
+  display: none;
+  margin-top: 20px; /* [修改] */
+}
+.page-content.active {
+  display: block;
+}
+
+/* --- [新功能] "工作" 分頁的 CSS 樣式 --- */
+.work-grid {
+  display: grid;
+  /* 建立三欄，自動適應寬度，但最小為 320px */
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+/* 1. 待辦事項 */
+.todo-input-area {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.todo-input-area .search-input {
+  flex: 1;
+}
+.todo-list {
+  list-style: none;
+  max-height: 300px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0; /* 確保沒有預設 padding */
+}
+.todo-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: #f1f7f5;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-weight: 600;
+  color: #3a6259;
+}
+.todo-item-text {
+  flex: 1;
+  cursor: pointer;
+  user-select: none;
+  font-size: 15px;
+}
+.todo-item.completed .todo-item-text {
+  text-decoration: line-through;
+  opacity: 0.6;
+  color: #58716b;
+}
+.todo-delete-btn {
+  background: #e2646a;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 4px 8px;
+  font-weight: 700;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+.todo-delete-btn:hover {
+  background: #c95056;
+}
+
+/* 2. 番茄鐘 */
+.pomodoro-timer-display {
+  font-size: 4rem;
+  font-weight: 700;
+  color: #578f89;
+  text-align: center;
+  margin: 10px 0;
+}
+.pomodoro-controls {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.pomodoro-controls .search-btn,
+.pomodoro-controls .refresh-btn {
+  padding: 10px 24px;
+  font-size: 15px;
+}
+.pomodoro-status {
+  text-align: center;
+  font-weight: 600;
+  color: #3e7e72;
+}
+
+/* 3. 快速筆記 */
+.quick-notes {
+  width: 100%;
+  min-height: 300px;
+  border: 2px solid #a1d1c4;
+  background: #f1f7f5;
+  border-radius: 12px;
+  padding: 12px;
+  font-family: 'Microsoft JhengHei', 'PingFang TC', sans-serif;
+  font-size: 14px;
+  resize: vertical; /* 允許使用者垂直調整大小 */
+  color: #376655;
+}
+.quick-notes:focus {
+  outline: none;
+  border-color: #7ba8a3;
+  box-shadow: 0 0 0 4px rgba(123, 168, 163, 0.2);
+}
+.notes-saved-status {
+  font-size: 12px;
+  color: #58716b;
+  text-align: right;
+  margin-top: 6px;
+  opacity: 0.8;
+}

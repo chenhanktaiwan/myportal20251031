@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>個人入口網站 - [V5 最終還原版]</title>
+  
+  <link rel="stylesheet" href="style.css">
+  </head>
+<body>
+
+<div class="container">
+  
+  <div class="portal-nav-sticky">
+    <div class="portal-tabs">
+        <button class="portal-tab-btn active" data-page="home">首頁</button>
+        <button class="portal-tab-btn" data-page="personal">個人</button>
+        <button class="portal-tab-btn" data-page="news">新聞</button>
+        <button class="portal-tab-btn" data-page="map">地圖</button>
+        <button class="portal-tab-btn" data-page="work">工作</button>
+    </div>
+    <div class="nav-info-right">
+        <select id="locationSelectorNav" class="location-selector" aria-label="選擇城市">
+          <option value="25.0330,121.5654">台北市</option>
+          <option value="24.1477,120.6736">台中市</option>
+          <option value="22.6273,120.3014">高雄市</option>
+          <option value="25.0375,121.4252">新北市</option>
+          <option value="24.8138,120.9675">新竹市</option>
+          <option value="24.9936,121.3010">桃園市</option>
+          <option value="22.9998,120.2269">台南市</option>
+        </select>
+        <div id="nav-weather" class="nav-weather">--°</div>
+        <div id="nav-datetime" class="nav-datetime">載入中...</div>
+    </div>
+  </div>
+
+  <div id="page-home" class="page-content active">
+     <div class="header">
+      <div class="header-top">
+        <div class="greeting-section">
+          <div class="greeting">您好！歡迎回來 ??</div>
+          <div class="datetime" id="datetime"></div>
+        </div>
+        <div class="weather-forecast-horizontal" id="weatherRow">
+          <div class="weather-loading">載入天氣資料中...</div>
+        </div>
+        <select id="locationSelectorMain" class="location-selector" aria-label="選擇城市">
+          <option value="25.0330,121.5654">台北市</option>
+          <option value="24.1477,120.6736">台中市</option>
+          <option value="22.6273,120.3014">高雄市</option>
+          <option value="25.0375,121.4252">新北市</option>
+          <option value="24.8138,120.9675">新竹市</option>
+          <option value="24.9936,121.3010">桃園市</option>
+          <option value="22.9998,120.2269">台南市</option>
+        </select>
+      </div>
+      </div>
+     <div class="search-section">
+      <input id="searchInput" class="search-input" placeholder="搜尋 Google 或輸入網址..."/>
+      <button id="searchBtn" class="search-btn">搜尋</button>
+    </div>
+    <div class="info-section">
+      <section class="news-card">
+        <div class="section-header">
+          <div class="section-title">
+            <div class="section-icon">??</div>
+            今日新聞
+          </div>
+          <div class="news-tabs">
+            <button id="tab-tw" class="news-tab active">台灣</button>
+            <button id="tab-jp" class="news-tab">日本</button>
+            <button id="tab-intl" class="news-tab">國際</button>
+            <button id="refreshNewsBtn" class="refresh-btn">重新整理</button>
+          </div>
+        </div>
+        <ul id="newsList" class="news-list"></ul>
+      </section>
+      <section class="stock-card">
+        <div class="section-header">
+          <div class="section-title">股票追蹤</div>
+          <div class="stock-tabs">
+            <button id="stockTab_tw" class="stock-tab active">台股</button>
+            <button id="stockTab_us" class="stock-tab">美股</button>
+          </div>
+        </div>
+        <div class="stock-search">
+          <input id="stockInput" class="stock-search-input" placeholder="輸入股票代碼（例：2330 / AAPL）" />
+          <button id="stockAddBtn" class="stock-add-btn">加入</button>
+        </div>
+        <div id="stocksList" class="stock-list">
+          <div class="stocks-loading">載入股票資料中...</div>
+        </div>
+      </section>
+    </div>
+    <div class="map-card-full">
+        <div class="section-header">
+            <div class="section-title">
+                <div class="section-icon">???</div>
+                Google 地圖
+            </div>
+            <div class="map-search-box">
+                <input id="mapSearchInput" class="search-input" placeholder="搜尋地點或地址...">
+                <button id="mapSearchBtn" class="search-btn">搜尋</button>
+            </div>
+        </div>
+        <div class="map-content">
+            <iframe id="mapFrame"
+                src="https://maps.google.com/maps?q=台北101&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                frameborder="0" scrolling="no" marginheight="0" marginwidth="0">
+            </iframe>
+        </div>
+    </div>
+    <div class="main-content">
+        <div class="card">
+            <div class="card-title">
+                <div class="card-icon">??</div>
+                我的專案
+            </div>
+            <div class="project-item" onclick="openLink('#')">
+                <div class="project-name">銷售數據管理系統</div>
+                <div class="project-desc">OCR 辨識 | 數據分析 | 視覺化儀表板</div>
+            </div>
+            <div class="project-item" onclick="openLink('#')">
+                <div class="project-name">數據分析頁面</div>
+                <div class="project-desc">期間對比 | 品項分析 | 趨勢圖表</div>
+            </div>
+            <div class="project-item" onclick="openLink('#')">
+                <div class="project-name">上傳管理系統</div>
+                <div class="project-desc">圖片上傳 | OCR 處理 | 數據整合</div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-title">
+                <div class="card-icon">??</div>
+                常用工具
+            </div>
+            <div class="tool-item" onclick="openLink('https://pages.cloudflare.com/')">
+                <div class="tool-icon">CF</div>
+                <div class="tool-info">
+                    <div class="tool-name">Cloudflare Pages</div>
+                    <div class="tool-url">頁面部署管理</div>
+                </div>
+            </div>
+            <div class="tool-item" onclick="openLink('https://gemini.google.com/')">
+                <div class="tool-icon">AI</div>
+                <div class="tool-info">
+                    <div class="tool-name">Gemini AI</div>
+                    <div class="tool-url">AI 助理服務</div>
+                </div>
+            </div>
+            <div class="tool-item" onclick="openLink('https://github.com/')">
+                <div class="tool-icon">GH</div>
+                <div class="tool-info">
+                    <div class="tool-name">GitHub</div>
+                    <div class="tool-url">程式碼版本控制</div>
+                </div>
+            </div>
+            <div class="tool-item" onclick="openLink('https://www.canva.com/')">
+                <div class="tool-icon">??</div>
+                <div class="tool-info">
+                    <div class="tool-name">Canva</div>
+                    <div class="tool-url">圖形設計工具</div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-title">
+                <div class="card-icon">??</div>
+                快速連結
+            </div>
+            <div class="link-grid">
+                <div class="quick-link" onclick="openLink('https://www.google.com.tw')">Google 搜尋</div>
+                <div class="quick-link" onclick="openLink('https://mail.google.com')">Gmail</div>
+                <div class="quick-link" onclick="openLink('https://drive.google.com')">Google Drive</div>
+                <div class="quick-link" onclick="openLink('https://translate.google.com')">Google 翻譯</div>
+                <div class="quick-link" onclick="openLink('https://www.youtube.com')">YouTube</div>
+                <div class="quick-link" onclick="openLink('https://maps.google.com.tw')">Google 地圖</div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-title">
+                <div class="card-icon">??</div>
+                開發資源
+            </div>
+            <div class="bookmark-section">
+                <div class="bookmark-category">前端開發</div>
+                <div class="bookmark-link" onclick="openLink('https://developer.mozilla.org/')">MDN Web Docs</div>
+                <div class="bookmark-link" onclick="openLink('https://stackoverflow.com/')">Stack Overflow</div>
+                <div class="bookmark-link" onclick="openLink('https://codepen.io/')">CodePen</div>
+                <div class="bookmark-category">設計靈感</div>
+                <div class="bookmark-link" onclick="openLink('https://dribbble.com/')">Dribbble</div>
+                <div class="bookmark-link" onclick="openLink('https://www.behance.net/')">Behance</div>
+                <div class="bookmark-link" onclick="openLink('https://unsplash.com/')">Unsplash</div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-title">
+                <div class="card-icon">??</div>
+                娛樂與生活
+            </div>
+            <div class="bookmark-section">
+                <div class="bookmark-link" onclick="openLink('https://www.sbs.com.au/ondemand/')">SBS On Demand</div>
+                <div class="bookmark-link" onclick="openLink('https://www.netflix.com/')">Netflix</div>
+                <div class="bookmark-link" onclick="openLink('https://www.tripadvisor.com.tw/')">TripAdvisor</div>
+                <div class="bookmark-link" onclick="openLink('https://www.books.com.tw/')">博客來</div>
+            </div>
+        </div>
+  </div>
+
+  <div id="page-personal" class="page-content">
+      <div class="card">
+          <h2>個人 (建置中)</h2>
+          <p>此頁面暫時留空。你可以在這裡放你的個人資料或設定。</p>
+      </div>
+  </div>
+
+  <div id="page-news" class="page-content">
+      <div class="card">
+          <h2>新聞 (建置中)</h2>
+          <p>此頁面暫時留空。你可以在這裡建置更完整的新聞瀏覽功能。</p>
+      </div>
+  </div>
+
+  <div id="page-map" class="page-content">
+        <div class="card">
+          <h2>地圖 (建置中)</h2>
+          <p>此頁面暫時留空。你可以在這裡建置更完整的地圖功能。</p>
+      </div>
+  </div>
+  
+  <div id="page-work" class="page-content">
+    <div class="work-grid">
+      
+      <div class="card">
+        <div class="card-title">
+          <div class="card-icon">??</div>
+          待辦事項清單
+        </div>
+        <div class="todo-input-area">
+          <input type="text" id="todoInput" class="search-input" placeholder="新增任務...">
+          <button id="addTodoBtn" class="search-btn">新增</button>
+        </div>
+        <ul id="todoList" class="todo-list">
+          </ul>
+      </div>
+      
+      <div class="card">
+        <div class="card-title">
+          <div class="card-icon">??</div>
+          番茄鐘
+        </div>
+        <div class="pomodoro-timer-display" id="pomodoroTimer">25:00</div>
+        <div class="pomodoro-controls">
+          <button id="pomoStartPauseBtn" class="search-btn">開始</button>
+          <button id="pomoResetBtn" class="refresh-btn">重設</button>
+        </div>
+        <div class="pomodoro-status" id="pomodoroStatus">準備開始工作 ??</div>
+      </div>
+      
+      <div class="card">
+        <div class="card-title">
+          <div class="card-icon">??</div>
+          快速筆記
+        </div>
+        <textarea id="quickNotesArea" class="quick-notes" placeholder="在這裡輸入你的筆記..."></textarea>
+        <div class_id="notesSavedStatus">所有變更已自動儲存</div>
+      </div>
+      
+    </div>
+  </div>
+  
+</div>
+<script src="script.js"></script>
+</body>
+</html>

@@ -243,7 +243,7 @@ function switchStockMarket(market){
   loadStocks();
 }
 
-// ▼▼▼ [股票修正] 台股和美股現在都呼叫我們自己的後端 Function ▼▼▼
+// ▼▼▼ [股票修正] 修正 Cloudflare Function 的網址 (移除 /functions) ▼▼▼
 async function loadStocks(){
   const container = document.getElementById('stocksList');
   if (!container) return;
@@ -255,14 +255,12 @@ async function loadStocks(){
     container.innerHTML = '';
     for(const symbol of watchlist){
       try{
-        // [修改] 不再使用 corsproxy.io，
-        // 呼叫我們自己的後端 Function，並傳入 market=tw
-        const url = `/functions/get-stock?market=tw&symbol=${symbol}`;
+        // [修改] 修正網址路徑
+        const url = `/get-stock?market=tw&symbol=${symbol}`;
         
         const res = await fetch(url);
-        const data = await res.json(); 
+        const data = await res.json(); // <--- 錯誤發生在這裡 (script.js:288)
         
-        // [不變] 這裡的解析邏輯與之前完全相同
         if(data.msgArray && data.msgArray.length > 0) {
           const st = data.msgArray[0];
           const price = parseFloat(st.z) || 0;
@@ -290,18 +288,17 @@ async function loadStocks(){
       }
     }
   } else {
-    // (美股 API [修改] - 明確加入 market=us 參數)
+    // (美股 API)
     container.innerHTML = '';
     for(const symbol of watchlist){
       try{
-        // [修改] 傳入 market=us 參數
-        const url = `/functions/get-stock?market=us&symbol=${symbol}`;
+        // [修改] 修正網址路徑
+        const url = `/get-stock?market=us&symbol=${symbol}`;
         
         const response = await fetch(url);
-        const data = await response.json();
+        const data = await response.json(); // <--- 錯誤也可能發生在這裡
         
-        // [不變] 這裡的解析邏輯與之前完全相同
-        if(data['Global Quote']){
+        if(data['Global Quote'] && Object.keys(data['Global Quote']).length > 0){
           const q = data['Global Quote'];
           const price = parseFloat(q["05. price"]) || 0;
           const change = parseFloat(q["09. change"]) || 0;
@@ -322,9 +319,12 @@ async function loadStocks(){
           container.insertAdjacentHTML('beforeend', `<div class="stock-item">無法取得 ${symbol} 資訊 (API 限制)</div>`);
         }
       }catch(e){
+        console.error(`載入 ${symbol} 失敗:`, e);
         container.insertAdjacentHTML('beforeend', `<div class="stock-item">載入 ${symbol} 失敗</div>`);
       }
-      await delay(1400); 
+      // [修正] Alpha Vantage 的 API 有速率限制，即使是 demo key。保留延遲。
+      // 但我們現在是用自己的私人 key (存在變數裡)，可以嘗試縮短延遲
+      await delay(1000); // (原為 1400)
     }
   }
 }

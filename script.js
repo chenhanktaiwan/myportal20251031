@@ -107,7 +107,7 @@ document.getElementById('searchInput').addEventListener('keypress', e =>{
   if(e.key === 'Enter') document.getElementById('searchBtn').click();
 });
 
-// ▼▼▼ [地圖修正] http -> https ▼▼▼
+// ▼▼▼ [地圖修正] 404 -> 使用標準的 Google Maps Embed URL 並修正變數錯誤 ▼▼▼
 function searchGoogleMaps() {
   const input = document.getElementById('mapSearchInput');
   if (!input) return;
@@ -115,13 +115,15 @@ function searchGoogleMaps() {
   if (!query) return;
   const mapFrame = document.getElementById('mapFrame');
   if (!mapFrame) return;
-  // 修正網址為 https
-  const newSrc = `https://googleusercontent.com/maps/google.com/2{encodeURIComponent(query)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+  // 修正網址為 https, 
+  // 修正網域為 maps.google.com,
+  // 修正變數 ${query} (原本少了 $ 符號)
+  const newSrc = `https://maps.google.com/maps?q=${encodeURIComponent(query)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
   mapFrame.src = newSrc;
 }
 // ▲▲▲ 修改結束 ▲▲▲
 
-// 新聞 (已修正 CORS) (不變)
+// 新聞 (不變)
 const RSS_FEEDS = {
     tw: [
         'https://news.ltn.com.tw/rss/all.xml',       // 自由時報 (首選)
@@ -151,12 +153,12 @@ function cleanCData(str) {
 function parseRSS(xmlText) {
     const articles = [];
     const maxArticles = 5;
-    let items = [...xmlText.matchAll(/<item>([\sS]*?)<\/item>/g)];
+    let items = [...xmlText.matchAll(/<item>([\s\S]*?)<\/item>/g)];
     if (items.length === 0) {
-         items.push(...xmlText.matchAll(/<item [^>]+>([\sS]*?)<\/item>/g));
+         items.push(...xmlText.matchAll(/<item [^>]+>([\s\S]*?)<\/item>/g));
     }
     if (items.length === 0) {
-         items.push(...xmlText.matchAll(/<item[^>]+rdf:about="([^"]+)"[\sS]*?<title>([\sS]*?)<\/title>[\sS]*?<\/item>/g));
+         items.push(...xmlText.matchAll(/<item[^>]+rdf:about="([^"]+)"[\s\S]*?<title>([\s\S]*?)<\/title>[\s\S]*?<\/item>/g));
          for (let i = 0; i < items.length && i < maxArticles; i++) {
              articles.push({
                  title: cleanCData(items[i][2]),
@@ -168,35 +170,37 @@ function parseRSS(xmlText) {
     }
     for (let i = 0; i < items.length && i < maxArticles; i++) {
         const itemContent = items[i][1];
-        const titleMatch = itemContent.match(/<title>([\sS]*?)<\/title>/);
+        const titleMatch = itemContent.match(/<title>([\s\S]*?)<\/title>/);
         const title = titleMatch ? cleanCData(titleMatch[1]) : '無標題';
-        const linkMatch = itemContent.match(/<link>([\sS]*?)<\/link>/);
+        const linkMatch = itemContent.match(/<link>([\s\S]*?)<\/link>/);
         const link = linkMatch ? (linkMatch[1] || '#') : '#';
         let sourceName = null;
-        const creatorMatch = itemContent.match(/<dc:creator>([\sS]*?)<\/dc:creator>/);
+        const creatorMatch = itemContent.match(/<dc:creator>([\s\S]*?)<\/dc:creator>/);
         sourceName = creatorMatch ? cleanCData(creatorMatch[1]) : 'N/A';
         articles.push({ title: title, url: link.trim(), source: { name: sourceName } });
     }
     return articles;
 }
+
+// ▼▼▼ [新聞修正] 替換失效的 allorigins 代理 ▼▼▼
 async function loadNews(){
   const list = document.getElementById('newsList');
   if (!list) return;
-  list.innerHTML = '<li class="news-loading">載入新聞中</li>';
+  list.innerHTML = '<li class="news-loading">載入新聞中...</li>';
   const refreshBtn = document.getElementById('refreshNewsBtn');
   if (refreshBtn) refreshBtn.disabled = true;
   const urlsToTry = RSS_FEEDS[currentNewsTab] || RSS_FEEDS['tw'];
   let success = false;
   for (const rssUrl of urlsToTry) {
       try {
-          // [修改] 更換為 allorigins 代理
-          const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(rssUrl)}`;
+          // [修改] 更換為 corsproxy.io 代理
+          const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(rssUrl)}`;
           
           const res = await fetch(proxyUrl);
           if (!res.ok) throw new Error(`代理伺服器錯誤 (狀態: ${res.status})`);
           
-          const data = await res.json(); // allorigins 回傳 JSON
-          const xmlText = data.contents;  // 實際的 XML/RSS 內容
+          // corsproxy.io 直接回傳 XML/TEXT，不是 JSON
+          const xmlText = await res.text(); 
           
           const articles = parseRSS(xmlText);
           
@@ -234,8 +238,10 @@ async function loadNews(){
   }
   if (refreshBtn) refreshBtn.disabled = false;
 }
+// ▲▲▲ 修改結束 ▲▲▲
 
-// 股票區 (不變，仍使用 Cloudflare Function)
+
+// 股票區 (不變)
 const stockWatchlist = {
   tw: ['2330','2317','2454','2603','0050'],
   us: ['AAPL','GOOGL','TSLA','NVDA','MSFT']
@@ -248,24 +254,25 @@ function switchStockMarket(market){
   loadStocks();
 }
 
+// ▼▼▼ [股票修正] 替換失效的 allorigins 代理 ▼▼▼
 async function loadStocks(){
   const container = document.getElementById('stocksList');
   if (!container) return;
   
   const watchlist = stockWatchlist[stockCurrentMarket];
-  container.innerHTML = '<div class="stocks-loading">載入股票資料中</div>';
+  container.innerHTML = '<div class="stocks-loading">載入股票資料中...</div>';
   
   if(stockCurrentMarket==='tw'){
     container.innerHTML = '';
     for(const symbol of watchlist){
       try{
-        // (台股 API 不變，因為它不使用金鑰)
-        const twseUrl = `https://mis.twse.com.tw/stock/api/getStockInfo.jsp?ex_ch=tse_${symbol}.tw&json=1&delay=0`;
-        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(twseUrl)}`;
+        // [修改] 更換為 corsproxy.io 代理
+        const twseUrl = `https_mis.twse.com.tw/stock/api/getStockInfo.jsp?ex_ch=tse_${symbol}.tw&json=1&delay=0`;
+        const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(twseUrl)}`;
         
         const res = await fetch(proxyUrl);
-        const jsonData = await res.json(); 
-        const data = JSON.parse(jsonData.contents); 
+        // corsproxy.io 直接回傳 JSON
+        const data = await res.json(); 
         
         if(data.msgArray && data.msgArray.length > 0) {
           const st = data.msgArray[0];
@@ -330,6 +337,8 @@ async function loadStocks(){
     }
   }
 }
+// ▲▲▲ 修改結束 ▲▲▲
+
 
 function delay(ms){return new Promise(r=>setTimeout(r,ms));}
 document.getElementById('stockAddBtn').onclick = () => {

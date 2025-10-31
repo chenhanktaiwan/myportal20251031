@@ -135,7 +135,7 @@ function updateWeather(sourceSelectorId){
   targetRow.innerHTML = '<div class="weather-loading">載入天氣資料中...</div>';
   targetNav.innerHTML = '...';
 
-  fetch(`https://api.open-meteo.com/v1/forecast?latitude=${v[0]}&longitude=${v[1]}&current_weather=true&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Asia/Taipei&forecast_days=7`)
+  fetch(`https://api.open-meteo.com/v1/forecast?latitude=${v[0]}&longitude=${v[1]}&current_weather=true&daily=weathercode,temperature_2m_max,temperature_2-m_min,precipitation_probability_max&timezone=Asia/Taipei&forecast_days=7`)
   .then(r=>r.json()).then(d=>{
      // 1. [已還原] 填入 7 天天氣預報
     let html='';
@@ -600,6 +600,9 @@ function initTabNavigation() {
             
             // 2. 切換頁面內容 (!!! 這裡是修正的地方 !!!)
             pages.forEach(page => {
+                // [新] 清除舊的 style.display，讓 CSS 的 class (.active) 來接管
+                page.style.display = ''; 
+                
                 if (page.id === 'page-' + pageName) {
                     page.classList.add('active'); // (修正) 使用 class 來控制顯示
                 } else {

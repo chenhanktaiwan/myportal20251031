@@ -1,6 +1,82 @@
 // [修改] API Key 已被移除
 // (我們不再需要這行，它已移至 Cloudflare 後端)
 
+// ▼▼▼ [新功能] "個人" 設定 ▼▼▼
+let userSettings = {
+  username: '',
+  location: '25.0330,121.5654' // 預設 台北市
+};
+
+// 1. 載入設定 (從 localStorage)
+function loadSettings() {
+  const storedSettings = localStorage.getItem('portalSettings');
+  if (storedSettings) {
+    userSettings = JSON.parse(storedSettings);
+  }
+}
+
+// 2. 儲存設定 (到 localStorage)
+function saveSettings() {
+  const usernameInput = document.getElementById('setting-username');
+  const locationInput = document.getElementById('setting-location');
+  
+  userSettings.username = usernameInput.value.trim();
+  userSettings.location = locationInput.value;
+  
+  localStorage.setItem('portalSettings', JSON.stringify(userSettings));
+  
+  alert('設定已儲存！');
+  // 立即套用
+  applySettings();
+}
+
+// 3. 套用設定到介面上
+function applySettings() {
+  // 3a. 套用歡迎詞
+  const greetingEl = document.getElementById('greeting-text');
+  if (greetingEl) {
+    if (userSettings.username) {
+      greetingEl.textContent = `您好！${userSettings.username} 歡迎回來 👋`;
+    } else {
+      greetingEl.textContent = '您好！歡迎回來 👋';
+    }
+  }
+  
+  // 3b. 套用天氣
+  const locNav = document.getElementById('locationSelectorNav');
+  const locMain = document.getElementById('locationSelectorMain');
+  if (locNav && locMain) {
+    locNav.value = userSettings.location;
+    locMain.value = userSettings.location;
+    // 觸發天氣更新
+    updateWeather('locationSelectorNav');
+  }
+}
+
+// 4. 重設所有資料
+function resetSettings() {
+  if (confirm('您確定要重設所有資料嗎？\n這將會清除您的設定、待辦事項和快速筆記。')) {
+    localStorage.removeItem('portalSettings');
+    localStorage.removeItem('portalTodos');
+    localStorage.removeItem('portalQuickNotes');
+    // 重新載入頁面以套用預設值
+    location.reload();
+  }
+}
+
+// 5. 填入「個人」分頁的輸入框
+function populateSettingsPage() {
+  const usernameInput = document.getElementById('setting-username');
+  const locationInput = document.getElementById('setting-location');
+  
+  if (usernameInput && locationInput) {
+    usernameInput.value = userSettings.username;
+    locationInput.value = userSettings.location;
+  }
+}
+// ▲▲▲ "個人" 設定 JS 結束 ▲▲▲
+
+
 // 日期 (不變)
 function updateDatetime() {
   const now = new Date();
@@ -509,7 +585,7 @@ function resetPomo() {
 // --- 新功能 JS 結束 ---
 
 
-// [新功能] 分頁切換的 JS 邏輯 (不變)
+// ▼▼▼ [修改] "分頁切換" 邏輯 ▼▼▼
 function initTabNavigation() {
     const tabs = document.querySelectorAll('.portal-tab-btn');
     const pages = document.querySelectorAll('.page-content');
@@ -536,7 +612,7 @@ function initTabNavigation() {
                  // 檢查首頁功能是否需要重新載入
                  const weatherRow = document.getElementById('weatherRow');
                  if (!weatherRow || !weatherRow.innerHTML.includes('weather-day-h')) {
-                   updateWeather('locationSelectorNav'); // [修改] 觸發
+                   updateWeather('locationSelectorNav'); 
                  }
                  const stockList = document.getElementById('stocksList');
                  if (!stockList || !stockList.innerHTML.includes('stock-item')) {
@@ -548,30 +624,39 @@ function initTabNavigation() {
                  }
             
             } else if (pageName === 'work') {
-                // D"工作" 分頁的資料
-                // (確保番茄鐘顯示是正確的)
+                // 載入 "工作" 分頁的資料
                 updatePomoDisplay(); 
                 loadTodos();
                 loadNotes();
+            
+            // [新功能] 載入 "個人" 分頁
+            } else if (pageName === 'personal') {
+                populateSettingsPage();
             }
         });
     });
 }
+// ▲▲▲ 修改結束 ▲▲▲
 
-// --- 程式碼開始執行 --- (不變)
+
+// --- 程式碼開始執行 ---
 // [修改] 確保所有程式碼都在 DOM 載入後執行
 document.addEventListener('DOMContentLoaded', () => {
     
-    // 1. 綁定分頁切換
+    // 1. [新功能] 載入並套用儲存的設定
+    loadSettings();
+    applySettings(); // 必須在載入其他 (如天氣) 之前套用
+    
+    // 2. 綁定分頁切換
     initTabNavigation();
     
-    // 2. 初始載入 "首頁" 的所有功能
+    // 3. 初始載入 "首頁" 的所有功能
     updateDatetime();
-    updateWeather('locationSelectorNav'); // [修改] 初始載入
+    // updateWeather('locationSelectorNav'); // 不再需要，applySettings() 會觸發
     loadStocks();
     loadNews();
     
-    // 3. 綁定首頁上的所有按鈕
+    // 4. 綁定首頁上的所有按鈕
     // (天氣/導覽列) [修改] 綁定兩個選擇器
     document.getElementById('locationSelectorNav').onchange = () => updateWeather('locationSelectorNav');
     document.getElementById('locationSelectorMain').onchange = () => updateWeather('locationSelectorMain');
@@ -618,9 +703,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (e.key === 'Enter') searchGoogleMaps();
     });
 
-    // [新功能] 綁定 "工作" 分頁的事件
-    
-    // 待辦事項
+    // 5. [新功能] 綁定 "工作" 分頁的事件
     const addTodoBtn = document.getElementById('addTodoBtn');
     if (addTodoBtn) addTodoBtn.onclick = addTodo;
     
@@ -632,16 +715,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const todoList = document.getElementById('todoList');
     if (todoList) todoList.addEventListener('click', handleTodoClick);
 
-    // 快速筆記
     const notesArea = document.getElementById('quickNotesArea');
-    // 使用 'input' 事件，每次輸入都即時儲存
     if (notesArea) notesArea.addEventListener('input', saveNotes); 
 
-    // 番茄鐘
     const pomoStartBtn = document.getElementById('pomoStartPauseBtn');
     if (pomoStartBtn) pomoStartBtn.onclick = startPausePomo;
     
     const pomoResetBtn = document.getElementById('pomoResetBtn');
     if (pomoResetBtn) pomoResetBtn.onclick = resetPomo;
+    
+    // 6. [新功能] 綁定 "個人" 分頁的事件
+    const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+    if (saveSettingsBtn) saveSettingsBtn.onclick = saveSettings;
+    
+    const resetSettingsBtn = document.getElementById('resetSettingsBtn');
+    if (resetSettingsBtn) resetSettingsBtn.onclick = resetSettings;
     
 });

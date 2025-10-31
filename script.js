@@ -135,7 +135,7 @@ function updateWeather(sourceSelectorId){
   targetRow.innerHTML = '<div class="weather-loading">載入天氣資料中...</div>';
   targetNav.innerHTML = '...';
 
-  fetch(`https://api.open-meteo.com/v1/forecast?latitude=${v[0]}&longitude=${v[1]}&current_weather=true&daily=weathercode,temperature_2m_max,temperature_2-m_min,precipitation_probability_max&timezone=Asia/Taipei&forecast_days=7`)
+  fetch(`https://api.open-meteo.com/v1/forecast?latitude=${v[0]}&longitude=${v[1]}&current_weather=true&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Asia/Taipei&forecast_days=7`)
   .then(r=>r.json()).then(d=>{
      // 1. [已還原] 填入 7 天天氣預報
     let html='';
@@ -599,14 +599,19 @@ function initTabNavigation() {
             tab.classList.add('active');
             
             // 2. 切換頁面內容 (!!! 這裡是修正的地方 !!!)
+            //    我們必須使用 'active' class 來控制 CSS，
+            //    並清除由舊版 JS 造成的行內 'style.display' 汙染。
             pages.forEach(page => {
-                // [新] 清除舊的 style.display，讓 CSS 的 class (.active) 來接管
+                
+                // [關鍵修正] 清除所有殘留的行內 style.display 屬性
+                // 這樣 CSS 才能 (.page-content / .page-content.active) 才能接管
                 page.style.display = ''; 
                 
+                // 透過 class 來控制顯示/隱藏
                 if (page.id === 'page-' + pageName) {
-                    page.classList.add('active'); // (修正) 使用 class 來控制顯示
+                    page.classList.add('active');
                 } else {
-                    page.classList.remove('active'); // (修正) 移除 class 來隱藏
+                    page.classList.remove('active');
                 }
             });
             

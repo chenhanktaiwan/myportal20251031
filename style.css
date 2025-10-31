@@ -755,3 +755,29 @@ body {
   transform: scale(1.1);
   box-shadow: 0 6px 16px rgba(123, 168, 163, 0.3);
 }
+
+/* --- [新功能] "個人" 分頁設定 CSS --- */
+.setting-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.setting-item label {
+  font-weight: 600;
+  color: #3e7e72;
+  font-size: 14px;
+}
+.setting-item .search-input,
+.setting-item .location-selector {
+  width: 100%;
+  max-width: 400px; /* 限制最大寬度 */
+}
+.setting-controls {
+  display: flex;
+  flex-wrap: wrap; /* 在小螢幕時換行 */
+  gap: 12px;
+  margin-top: 10px;
+  border-top: 2px solid #e0ebea;
+  padding-top: 16px;
+}

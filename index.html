@@ -38,7 +38,7 @@
      <div class="header">
       <div class="header-top">
         <div class="greeting-section">
-          <div class="greeting">您好！歡迎回來 👋</div>
+          <div class="greeting" id="greeting-text">您好！歡迎回來 👋</div>
           <div class="datetime" id="datetime"></div>
         </div>
         <div class="weather-forecast-horizontal" id="weatherRow">
@@ -208,12 +208,42 @@
   </div>
 
   <div id="page-personal" class="page-content">
+    <div class_id="personal-grid">
       <div class="card">
-          <h2>個人 (建置中)</h2>
-          <p>此頁面暫時留空。你可以在這裡放你的個人資料或設定。</p>
+        <div class="card-title">
+          <div class="card-icon">⚙️</div>
+          個人化設定
+        </div>
+        <div class="setting-item">
+          <label for="setting-username">你的名字：</label>
+          <input type="text" id="setting-username" class="search-input" placeholder="例如：程式夥伴">
+        </div>
+        <div class="setting-item">
+          <label for="setting-location">預設天氣地點：</label>
+          <select id="setting-location" class="location-selector" style="color: #376655; background: #f1f7f5; border-color: #a3bbb9; backdrop-filter: none;">
+            <option value="25.0330,121.5654">台北市</option>
+            <option value="24.1477,120.6736">台中市</option>
+            <option value="22.6273,120.3014">高雄市</option>
+            <option value="25.0375,121.4252">新北市</option>
+            <option value="24.8138,120.9675">新竹市</option>
+            <option value="24.9936,121.3010">桃園市</option>
+            <option value="22.9998,120.2269">台南市</option>
+          </select>
+        </div>
+        <div class="setting-controls">
+          <button id="saveSettingsBtn" class="search-btn">儲存設定</button>
+          <button id="resetSettingsBtn" class="refresh-btn" style="background-color: #e2646a; border-color: #e2646a;">重設所有資料</button>
+        </div>
       </div>
+      <div class="card">
+        <div class="card-title">
+          <div class="card-icon">🎨</div>
+          佈景主題 (建置中)
+        </div>
+        <p>未來將允許自訂顏色主題。</p>
+      </div>
+    </div>
   </div>
-
   <div id="page-news" class="page-content">
       <div class="card">
           <h2>新聞 (建置中)</h2>

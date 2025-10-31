@@ -115,7 +115,7 @@ function searchGoogleMaps() {
   if (!query) return;
   const mapFrame = document.getElementById('mapFrame');
   if (!mapFrame) return;
-  const newSrc = `http://googleusercontent.com/maps/google.com/2{encodeURIComponent(query)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+  const newSrc = `https://maps.google.com/maps?q=${encodeURIComponent(query)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
   mapFrame.src = newSrc;
 }
 
@@ -243,7 +243,7 @@ function switchStockMarket(market){
   loadStocks();
 }
 
-// [股票修正] (不變，使用 /get-stock)
+// [股票修正] (不變，使用 /get-stock 和 12.5 秒延遲)
 async function loadStocks(){
   const container = document.getElementById('stocksList');
   if (!container) return;
@@ -321,10 +321,8 @@ async function loadStocks(){
         container.insertAdjacentHTML('beforeend', `<div class="stock-item">載入 ${symbol} 失敗</div>`);
       }
       
-      // ▼▼▼ [API 限制修正] 遵守 Alpha Vantage 每分鐘 5 次的限制 ▼▼▼
-      // 將延遲從 1000ms (1秒) 增加到 12500ms (12.5秒)
+      // [API 限制修正] 遵守 Alpha Vantage 每分鐘 5 次的限制
       await delay(12500); 
-      // ▲▲▲ 修改結束 ▲▲▲
     }
   }
 }

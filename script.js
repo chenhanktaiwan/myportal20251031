@@ -20,13 +20,25 @@ function updateDatetime() {
   }
 }
 
-// 天氣呼叫API (不變)
+// ▼▼▼ [修正] 亂碼 ?? -> 天氣 Emojis ▼▼▼
 const weatherCodes = {
-  0:{emoji:'??',desc:'晴天'},1:{emoji:'???',desc:'晴朗'},2:{emoji:'?',desc:'多雲'},3:{emoji:'??',desc:'陰天'},
-  45:{emoji:'???',desc:'霧'},51:{emoji:'???',desc:'小雨'},55:{emoji:'???',desc:'大雨'},61:{emoji:'???',desc:'小雨'},63:{emoji:'???',desc:'中雨'},
-  65:{emoji:'??',desc:'大雨'},80:{emoji:'???',desc:'陣雨'},81:{emoji:'???',desc:'陣雨'},82:{emoji:'??',desc:'大陣雨'},95:{emoji:'??',desc:'雷雨'},
-  99:{emoji:'??',desc:'強雷雨'}
+  0: {emoji:'☀️', desc:'晴天'},
+  1: {emoji:'🌤️', desc:'晴朗'},
+  2: {emoji:'☁️', desc:'多雲'},
+  3: {emoji:'🌥️', desc:'陰天'},
+  45: {emoji:'🌫️', desc:'霧'},
+  51: {emoji:'🌦️', desc:'小雨'},
+  55: {emoji:'🌧️', desc:'大雨'},
+  61: {emoji:'🌦️', desc:'小雨'},
+  63: {emoji:'🌧️', desc:'中雨'},
+  65: {emoji:'🌧️', desc:'大雨'},
+  80: {emoji:'🌧️', desc:'陣雨'},
+  81: {emoji:'🌧️', desc:'陣雨'},
+  82: {emoji:'⛈️', desc:'大陣雨'},
+  95: {emoji:'🌩️', desc:'雷雨'},
+  99: {emoji:'⛈️', desc:'強雷雨'}
 };
+// ▲▲▲ 修改結束 ▲▲▲
 
 function updateWeather(sourceSelectorId){
   const selectorNav = document.getElementById('locationSelectorNav');
@@ -58,19 +70,21 @@ function updateWeather(sourceSelectorId){
       const date= new Date (d.daily.time[i]);
       const dayName = i===0 ?'今天':wd[date.getDay()];
       const code = d.daily.weathercode[i];
-      const w = weatherCodes[code] || { emoji:'???', desc:'多雲'};
+      const w = weatherCodes[code] || { emoji:'☁️', desc:'多雲'}; // [修正] 預設值
       const tMax = Math.round(d.daily.temperature_2m_max[i]);
       const tMin = Math.round(d.daily.temperature_2m_min[i]);
       const rainProb = d.daily.precipitation_probability_max[i] || 0;
       
-      html+=`<div class="weather-day-h"><div class="weather-date-h">${dayName}</div><span class="weather-emoji-h">${w.emoji}</span><div class="weather-temp-h">${tMin}° - ${tMax}°</div><div class="weather-rain-h">?? ${rainProb}%</div><div class="weather-desc-h">${w.desc}</div></div>`;
+      // ▼▼▼ [修正] 亂碼 ?? -> 💧 ▼▼▼
+      html+=`<div class="weather-day-h"><div class="weather-date-h">${dayName}</div><span class="weather-emoji-h">${w.emoji}</span><div class="weather-temp-h">${tMin}° - ${tMax}°</div><div class="weather-rain-h">💧 ${rainProb}%</div><div class="weather-desc-h">${w.desc}</div></div>`;
+      // ▲▲▲ 修改結束 ▲▲▲
     }
     targetRow.innerHTML = html;
     
      // 2. [已還原] 填入導覽列當前天氣 (不變)
     if (d.current_weather) {
         const cw = d.current_weather;
-        const w_nav = weatherCodes[cw.weathercode] || { emoji:'???', desc:'多雲'};
+        const w_nav = weatherCodes[cw.weathercode] || { emoji:'☁️', desc:'多雲'}; // [修正] 預設值
         const tMax_nav = Math.round(d.daily.temperature_2m_max[0]);
         const tMin_nav = Math.round(d.daily.temperature_2m_min[0]);
         targetNav.innerHTML = `<span class="nav-weather-emoji">${w_nav.emoji}</span> ${Math.round(cw.temperature)}° <span style="font-weight:400;opacity:0.8;">(${tMin_nav}°-${tMax_nav}°)</span>`;
@@ -103,7 +117,7 @@ function searchGoogleMaps() {
   if (!query) return;
   const mapFrame = document.getElementById('mapFrame');
   if (!mapFrame) return;
-  const newSrc = `https://maps.google.com/maps?q=${encodeURIComponent(query)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+  const newSrc = `http://googleusercontent.com/maps/google.com/2{encodeURIComponent(query)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
   mapFrame.src = newSrc;
 }
 
@@ -462,12 +476,14 @@ function startPausePomo() {
         if (pomoMode === 'work') {
           pomoMode = 'break';
           pomoTimeLeft = 5 * 60; // 5 分鐘休息
-          if (pomoStatusDisplay) pomoStatusDisplay.textContent = '休息時間 ??';
+          // ▼▼▼ [修正] 亂碼 ?? -> ☕ ▼▼▼
+          if (pomoStatusDisplay) pomoStatusDisplay.textContent = '休息時間 ☕';
           alert('工作時間結束！休息 5 分鐘。');
         } else {
           pomoMode = 'work';
           pomoTimeLeft = 25 * 60; // 25 分鐘工作
-          if (pomoStatusDisplay) pomoStatusDisplay.textContent = '準備開始工作 ??';
+          // ▼▼▼ [修正] 亂碼 ?? -> 🧑‍💻 ▼▼▼
+          if (pomoStatusDisplay) pomoStatusDisplay.textContent = '準備開始工作 🧑‍💻';
           alert('休息結束！準備開始工作。');
         }
         isPomoRunning = false;
@@ -485,7 +501,8 @@ function resetPomo() {
   pomoTimeLeft = 25 * 60;
   updatePomoDisplay();
   if (pomoStartPauseBtn) pomoStartPauseBtn.textContent = '開始';
-  if (pomoStatusDisplay) pomoStatusDisplay.textContent = '準備開始工作 ??';
+  // ▼▼▼ [修正] 亂碼 ?? -> 🧑‍💻 ▼▼▼
+  if (pomoStatusDisplay) pomoStatusDisplay.textContent = '準備開始工作 🧑‍💻';
 }
 // --- 新功能 JS 結束 ---
 

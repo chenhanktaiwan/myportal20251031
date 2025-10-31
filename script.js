@@ -1,7 +1,5 @@
-// ▼▼▼ [修改] API Key 已被移除 ▼▼▼
-// const ALPHA_VANTAGE_API_KEY = 'demo'; 
+// [修改] API Key 已被移除
 // (我們不再需要這行，它已移至 Cloudflare 後端)
-// ▲▲▲ 修改結束 ▲▲▲
 
 // 日期 (不變)
 function updateDatetime() {
@@ -109,7 +107,7 @@ document.getElementById('searchInput').addEventListener('keypress', e =>{
   if(e.key === 'Enter') document.getElementById('searchBtn').click();
 });
 
-// 地圖 (完整保留你原本的程式碼) (不變)
+// ▼▼▼ [地圖修正] http -> https ▼▼▼
 function searchGoogleMaps() {
   const input = document.getElementById('mapSearchInput');
   if (!input) return;
@@ -117,9 +115,11 @@ function searchGoogleMaps() {
   if (!query) return;
   const mapFrame = document.getElementById('mapFrame');
   if (!mapFrame) return;
-  const newSrc = `https://maps.google.com/maps?q=${encodeURIComponent(query)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+  // 修正網址為 https
+  const newSrc = `https://googleusercontent.com/maps/google.com/2{encodeURIComponent(query)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
   mapFrame.src = newSrc;
 }
+// ▲▲▲ 修改結束 ▲▲▲
 
 // 新聞 (已修正 CORS) (不變)
 const RSS_FEEDS = {
@@ -151,12 +151,12 @@ function cleanCData(str) {
 function parseRSS(xmlText) {
     const articles = [];
     const maxArticles = 5;
-    let items = [...xmlText.matchAll(/<item>([\s\S]*?)<\/item>/g)];
+    let items = [...xmlText.matchAll(/<item>([\sS]*?)<\/item>/g)];
     if (items.length === 0) {
-         items.push(...xmlText.matchAll(/<item [^>]+>([\s\S]*?)<\/item>/g));
+         items.push(...xmlText.matchAll(/<item [^>]+>([\sS]*?)<\/item>/g));
     }
     if (items.length === 0) {
-         items.push(...xmlText.matchAll(/<item[^>]+rdf:about="([^"]+)"[\s\S]*?<title>([\s\S]*?)<\/title>[\s\S]*?<\/item>/g));
+         items.push(...xmlText.matchAll(/<item[^>]+rdf:about="([^"]+)"[\sS]*?<title>([\sS]*?)<\/title>[\sS]*?<\/item>/g));
          for (let i = 0; i < items.length && i < maxArticles; i++) {
              articles.push({
                  title: cleanCData(items[i][2]),
@@ -168,12 +168,12 @@ function parseRSS(xmlText) {
     }
     for (let i = 0; i < items.length && i < maxArticles; i++) {
         const itemContent = items[i][1];
-        const titleMatch = itemContent.match(/<title>([\s\S]*?)<\/title>/);
+        const titleMatch = itemContent.match(/<title>([\sS]*?)<\/title>/);
         const title = titleMatch ? cleanCData(titleMatch[1]) : '無標題';
-        const linkMatch = itemContent.match(/<link>([\s\S]*?)<\/link>/);
+        const linkMatch = itemContent.match(/<link>([\sS]*?)<\/link>/);
         const link = linkMatch ? (linkMatch[1] || '#') : '#';
         let sourceName = null;
-        const creatorMatch = itemContent.match(/<dc:creator>([\s\S]*?)<\/dc:creator>/);
+        const creatorMatch = itemContent.match(/<dc:creator>([\sS]*?)<\/dc:creator>/);
         sourceName = creatorMatch ? cleanCData(creatorMatch[1]) : 'N/A';
         articles.push({ title: title, url: link.trim(), source: { name: sourceName } });
     }
@@ -183,7 +183,7 @@ async function loadNews(){
   const list = document.getElementById('newsList');
   if (!list) return;
   list.innerHTML = '<li class="news-loading">載入新聞中</li>';
-  const refreshBtn = document.getElementById('refreshBtn');
+  const refreshBtn = document.getElementById('refreshNewsBtn');
   if (refreshBtn) refreshBtn.disabled = true;
   const urlsToTry = RSS_FEEDS[currentNewsTab] || RSS_FEEDS['tw'];
   let success = false;
@@ -235,7 +235,7 @@ async function loadNews(){
   if (refreshBtn) refreshBtn.disabled = false;
 }
 
-// 股票區 (已修正 CORS) (不變)
+// 股票區 (不變，仍使用 Cloudflare Function)
 const stockWatchlist = {
   tw: ['2330','2317','2454','2603','0050'],
   us: ['AAPL','GOOGL','TSLA','NVDA','MSFT']
@@ -248,7 +248,6 @@ function switchStockMarket(market){
   loadStocks();
 }
 
-// ▼▼▼ [修改] loadStocks 函式以使用 Cloudflare Function ▼▼▼
 async function loadStocks(){
   const container = document.getElementById('stocksList');
   if (!container) return;
@@ -295,18 +294,15 @@ async function loadStocks(){
       }
     }
   } else {
-    // (美股 API [修改] - 使用我們的後端 Function)
+    // (美股 API [不變] - 仍使用我們的後端 Function)
     container.innerHTML = '';
     for(const symbol of watchlist){
       try{
-        // 舊: const url = `https://www.alphavantage.co/query?function=...&apikey=...`;
-        // 新: 呼叫我們在 Cloudflare 上的代理
         const url = `/functions/get-stock?symbol=${symbol}`;
         
         const response = await fetch(url);
         const data = await response.json();
         
-        // (其餘的解析邏輯完全不變)
         if(data['Global Quote']){
           const q = data['Global Quote'];
           const price = parseFloat(q["05. price"]) || 0;
@@ -330,13 +326,10 @@ async function loadStocks(){
       }catch(e){
         container.insertAdjacentHTML('beforeend', `<div class="stock-item">載入 ${symbol} 失敗</div>`);
       }
-      // (我們仍然保留延遲，因為 demo key 限制的是後端對 API 的呼叫)
       await delay(1400); 
     }
   }
 }
-// ▲▲▲ 修改結束 ▲▲▲
-
 
 function delay(ms){return new Promise(r=>setTimeout(r,ms));}
 document.getElementById('stockAddBtn').onclick = () => {
